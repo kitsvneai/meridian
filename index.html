@@ -8,64 +8,57 @@
 html{overflow-x:hidden;background:#06060e;scroll-behavior:smooth}
 body{background:#06060e}
 
-/* ===== ART SECTION ===== */
 #art{position:relative;width:100%;height:100vh;overflow:hidden;cursor:crosshair}
 canvas{display:block;width:100%;height:100%}
+
 .p{position:absolute;z-index:10;pointer-events:none;font-family:'SF Mono','Fira Code','Courier New',monospace}
-#fl{top:18px;left:22px}
-#wx{top:18px;right:22px;text-align:right}
-#ti{bottom:18px;left:22px}
-#hi{bottom:18px;right:22px;pointer-events:auto}
+.hud{background:rgba(6,6,14,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:14px 16px}
+#fl{top:18px;left:18px}
+#wx{top:18px;right:18px;text-align:right}
+#ti{bottom:18px;left:18px}
+#hi{bottom:18px;right:18px;pointer-events:auto}
+
 .b{display:inline-block;margin-bottom:7px;padding:3px 8px;border-radius:3px;font-size:9px;letter-spacing:2px;text-transform:uppercase}
 .bl{color:rgba(45,212,191,.8);border:1px solid rgba(45,212,191,.3)}
 .bs{color:rgba(245,158,11,.8);border:1px solid rgba(245,158,11,.3)}
 .bw{color:rgba(100,140,255,.7);border:1px solid rgba(100,140,255,.25)}
-.s{color:rgba(255,255,255,.3);font-size:11px;line-height:1.9;letter-spacing:.5px}
-.s .v{color:rgba(45,212,191,.6)}
-.s .w{color:rgba(100,140,255,.55)}
+.s{color:rgba(255,255,255,.35);font-size:11px;line-height:1.9;letter-spacing:.5px}
+.s .v{color:rgba(45,212,191,.65)}
+.s .w{color:rgba(100,140,255,.6)}
+
 #btn{background:none;border:1px solid rgba(255,255,255,.15);border-radius:3px;padding:6px 12px;
   color:rgba(255,255,255,.35);cursor:pointer;font-family:inherit;font-size:9px;letter-spacing:1px}
 #btn:hover{border-color:rgba(45,212,191,.5)}
 .ht{color:rgba(255,255,255,.12);font-size:9px;letter-spacing:1px}
 
 /* scroll cue */
-#scroll-cue{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:10;
+#scroll-cue{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:10;
   text-align:center;transition:opacity .4s}
-#scroll-cue a{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;
-  border-radius:100px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  color:rgba(255,255,255,.5);font-family:'SF Mono','Fira Code','Courier New',monospace;
-  font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;
-  cursor:pointer;transition:all .3s}
-#scroll-cue a:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7)}
-#scroll-cue a svg{animation:bob 2s ease-in-out infinite}
-@media(max-width:600px){
-  #scroll-cue a{font-size:12px;padding:12px 24px;gap:10px}
-}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+#scroll-cue a{display:inline-flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;cursor:pointer}
+#scroll-cue .box{padding:9px 18px;border-radius:4px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);
+  font-family:'SF Mono','Fira Code','Courier New',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;transition:all .3s}
+#scroll-cue a:hover .box{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7)}
+#scroll-cue svg{animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(4px);opacity:.3}}
 
 /* ===== MOBILE ===== */
 @media(max-width:600px){
   .s{font-size:12px;line-height:1.8}
   .b{font-size:10px;padding:3px 7px}
-  .s .v,.s .w{font-size:12px}
-  #fl{top:14px;left:16px}
-  #wx{top:14px;right:16px}
-  #ti{bottom:16px;left:16px}
-  #hi{bottom:16px;right:16px}
+  .hud{padding:12px 14px}
+  #fl{top:14px;left:12px}
+  #wx{top:14px;right:12px}
+  #ti{bottom:14px;left:12px}
+  #hi{bottom:14px;right:12px}
   #btn{font-size:13px;padding:12px 20px}
-  #scroll-cue{bottom:28px}
-  #scroll-cue span{font-size:9px}
-  #breakdown{padding:50px 24px 70px}
-  #breakdown h2{font-size:11px;margin-bottom:35px}
-  .row{gap:18px;margin-bottom:36px}
-  .row-body h3{font-size:10px}
-  .row-body p{font-size:14px;line-height:2}
-  .tag{font-size:10px;margin-top:6px}
-  .sep{margin:36px 0}
-  #breakdown .footer{font-size:9px}
+  #scroll-cue{bottom:100px}
+  #scroll-cue .box{font-size:12px;padding:11px 22px}
 }
 
-/* ===== BREAKDOWN SECTION ===== */
+/* ===== BREAKDOWN ===== */
 #breakdown{background:#06060e;padding:80px 40px 100px;max-width:720px;margin:0 auto;
   font-family:'SF Mono','Fira Code','Courier New',monospace}
 #breakdown h2{font-size:12px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,.3);
@@ -76,41 +69,47 @@ canvas{display:block;width:100%;height:100%}
 .row-body h3{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:400;margin-bottom:10px}
 .row-body p{font-size:13px;line-height:1.9;color:rgba(255,255,255,.45);letter-spacing:.3px}
 .tag{display:inline-block;padding:2px 6px;border-radius:2px;font-size:9px;letter-spacing:1px;margin-right:6px;margin-top:8px}
-
 .c-flight{background:rgba(45,212,191,.08);color:rgba(45,212,191,.5)}
 .c-wx{background:rgba(100,140,255,.08);color:rgba(100,140,255,.5)}
 .c-sound{background:rgba(200,160,255,.08);color:rgba(200,160,255,.5)}
 .c-interact{background:rgba(255,180,100,.08);color:rgba(255,180,100,.5)}
-
 .dot-flight{background:rgba(45,212,191,.5)}
 .dot-wx{background:rgba(100,140,255,.5)}
 .dot-sound{background:rgba(200,160,255,.5)}
 .dot-interact{background:rgba(255,180,100,.5)}
 .dot-field{background:rgba(255,255,255,.2)}
-
 .sep{border:none;border-top:1px solid rgba(255,255,255,.05);margin:48px 0}
-
 #breakdown .footer{text-align:center;margin-top:60px;color:rgba(255,255,255,.08);font-size:9px;letter-spacing:3px;text-transform:uppercase}
+@media(max-width:600px){
+  #breakdown{padding:50px 24px 70px}
+  #breakdown h2{font-size:11px;margin-bottom:35px}
+  .row{gap:18px;margin-bottom:36px}
+  .row-body h3{font-size:10px}
+  .row-body p{font-size:14px;line-height:2}
+  .tag{font-size:10px;margin-top:6px}
+  .sep{margin:36px 0}
+}
 </style>
 </head>
 <body>
 
-<!-- ===== ART ===== -->
 <div id="art">
   <canvas id="c"></canvas>
-  <div class="p" id="fl"><div id="badge" class="b bs">initializing</div><div class="s" id="fst"></div></div>
-  <div class="p" id="wx"><div class="b bw">weather</div><div class="s" id="wst"></div></div>
+  <div class="p hud" id="fl"><div id="badge" class="b bs">initializing</div><div class="s" id="fst"></div></div>
+  <div class="p hud" id="wx"><div class="b bw">weather</div><div class="s" id="wst"></div></div>
   <div class="p" id="ti">
     <div style="font-size:11px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,.15);margin-bottom:3px">Meridian</div>
     <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.08)">flight · weather · sound</div>
   </div>
   <div class="p" id="hi"><button id="btn" onclick="startAudio()">enable sound</button></div>
   <div id="scroll-cue">
-    <a href="#breakdown">how it works <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4.5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <a href="#breakdown">
+      <div class="box">how it works</div>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5l5 5 5-5" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </div>
 </div>
 
-<!-- ===== BREAKDOWN ===== -->
 <div id="breakdown">
   <h2>How Meridian Works</h2>
 
@@ -181,7 +180,6 @@ canvas{display:block;width:100%;height:100%}
   <div class="footer">built with canvas 2d · perlin noise · tone.js · open-meteo api</div>
 </div>
 
-<!-- ===== ENGINE ===== -->
 <script>
 /* ===== PERLIN NOISE ===== */
 var PM=new Uint8Array(512);
@@ -203,7 +201,6 @@ function noise3(x,y,z){
 }
 function fbm(x,y,z,o){var v=0,a=.5,f=1;for(var i=0;i<(o||4);i++){v+=a*noise3(x*f,y*f,z*f);f*=2;a*=.5}return v}
 
-/* ===== COLOR ===== */
 function altRGB(a,ts){
   a=Math.max(0,Math.min(1,a));var r,g,b;
   if(a<.25){var t=a/.25;r=15+t*25;g=30+t*150;b=120+t*70}
@@ -218,15 +215,17 @@ function altRGB(a,ts){
 var cv=document.getElementById('c'),ctx=cv.getContext('2d');
 var W=window.innerWidth||800, H=window.innerHeight||600;
 cv.width=W;cv.height=H;
+
+var refW=1200;
+var pScale=Math.min(1.3,Math.max(1,refW/W));
+var MAX_P=W<600?3500:4500;
+
 window.addEventListener('resize',function(){
   W=window.innerWidth||800;H=window.innerHeight||600;
   cv.width=W;cv.height=H;
   pScale=Math.min(1.3,Math.max(1,refW/W));
 });
 
-var MAX_P=W<600?3500:4500;
-var refW=1200;
-var pScale=Math.min(1.3,Math.max(1,refW/W));
 var ps=[], fl=[], time=0, frame=0, isLive=false;
 var avgAlt=.5, avgSpd=.5, hBias=0;
 var wx={wind:5,windDir:270,temp:20,hum:50,press:1013,clouds:30,precip:0};
@@ -481,7 +480,6 @@ ctx.fillStyle='#06060e';ctx.fillRect(0,0,W,H);
 fetchFlights();fetchWx();lastF=lastW=Date.now();
 requestAnimationFrame(loop);
 
-/* hide scroll cue on scroll */
 window.addEventListener('scroll',function(){
   var cue=document.getElementById('scroll-cue');
   if(cue)cue.style.opacity=Math.max(0,1-window.scrollY/200);
