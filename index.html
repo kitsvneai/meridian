@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{overflow-x:hidden;background:#06060e;scroll-behavior:smooth}
+body{background:#06060e}
+
+/* ===== ART SECTION ===== */
+#art{position:relative;width:100%;height:100vh;overflow:hidden;cursor:crosshair}
+canvas{display:block;width:100%;height:100%}
+.p{position:absolute;z-index:10;pointer-events:none;font-family:'SF Mono','Fira Code','Courier New',monospace}
+#fl{top:18px;left:22px}
+#wx{top:18px;right:22px;text-align:right}
+#ti{bottom:18px;left:22px}
+#hi{bottom:18px;right:22px;pointer-events:auto}
+.b{display:inline-block;margin-bottom:7px;padding:3px 8px;border-radius:3px;font-size:9px;letter-spacing:2px;text-transform:uppercase}
+.bl{color:rgba(45,212,191,.8);border:1px solid rgba(45,212,191,.3)}
+.bs{color:rgba(245,158,11,.8);border:1px solid rgba(245,158,11,.3)}
+.bw{color:rgba(100,140,255,.7);border:1px solid rgba(100,140,255,.25)}
+.s{color:rgba(255,255,255,.3);font-size:11px;line-height:1.9;letter-spacing:.5px}
+.s .v{color:rgba(45,212,191,.6)}
+.s .w{color:rgba(100,140,255,.55)}
+#btn{background:none;border:1px solid rgba(255,255,255,.15);border-radius:3px;padding:6px 12px;
+  color:rgba(255,255,255,.35);cursor:pointer;font-family:inherit;font-size:9px;letter-spacing:1px}
+#btn:hover{border-color:rgba(45,212,191,.5)}
+.ht{color:rgba(255,255,255,.12);font-size:9px;letter-spacing:1px}
+
+/* scroll cue */
+#scroll-cue{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:10;
+  pointer-events:none;text-align:center;transition:opacity .4s}
+#scroll-cue span{display:block;color:rgba(255,255,255,.35);font-family:'SF Mono','Fira Code','Courier New',monospace;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+#scroll-cue .arrow{display:block;margin:0 auto;animation:bob 2s ease-in-out infinite}
+#scroll-cue .line{display:block;width:1px;height:28px;margin:0 auto 8px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.25))}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(8px);opacity:.3}}
+
+/* ===== BREAKDOWN SECTION ===== */
+#breakdown{background:#06060e;padding:80px 40px 100px;max-width:720px;margin:0 auto;
+  font-family:'SF Mono','Fira Code','Courier New',monospace}
+#breakdown h2{font-size:12px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,.3);
+  margin-bottom:50px;font-weight:400}
+.row{margin-bottom:48px;display:flex;gap:28px;align-items:flex-start}
+.dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.row-body{flex:1}
+.row-body h3{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:400;margin-bottom:10px}
+.row-body p{font-size:13px;line-height:1.9;color:rgba(255,255,255,.45);letter-spacing:.3px}
+.tag{display:inline-block;padding:2px 6px;border-radius:2px;font-size:9px;letter-spacing:1px;margin-right:6px;margin-top:8px}
+
+.c-flight{background:rgba(45,212,191,.08);color:rgba(45,212,191,.5)}
+.c-wx{background:rgba(100,140,255,.08);color:rgba(100,140,255,.5)}
+.c-sound{background:rgba(200,160,255,.08);color:rgba(200,160,255,.5)}
+.c-interact{background:rgba(255,180,100,.08);color:rgba(255,180,100,.5)}
+
+.dot-flight{background:rgba(45,212,191,.5)}
+.dot-wx{background:rgba(100,140,255,.5)}
+.dot-sound{background:rgba(200,160,255,.5)}
+.dot-interact{background:rgba(255,180,100,.5)}
+.dot-field{background:rgba(255,255,255,.2)}
+
+.sep{border:none;border-top:1px solid rgba(255,255,255,.05);margin:48px 0}
+
+#breakdown .footer{text-align:center;margin-top:60px;color:rgba(255,255,255,.08);font-size:9px;letter-spacing:3px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<!-- ===== ART ===== -->
+<div id="art">
+  <canvas id="c"></canvas>
+  <div class="p" id="fl"><div id="badge" class="b bs">initializing</div><div class="s" id="fst"></div></div>
+  <div class="p" id="wx"><div class="b bw">weather</div><div class="s" id="wst"></div></div>
+  <div class="p" id="ti">
+    <div style="font-size:11px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,.15);margin-bottom:3px">Meridian</div>
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.08)">flight · weather · sound</div>
+  </div>
+  <div class="p" id="hi"><button id="btn" onclick="startAudio()">enable sound</button></div>
+  <div id="scroll-cue">
+    <span>how it works</span>
+    <div class="line"></div>
+    <div class="arrow">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 5l6 5 6-5" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BREAKDOWN ===== -->
+<div id="breakdown">
+  <h2>How Meridian Works</h2>
+
+  <div class="row">
+    <div class="dot dot-field"></div>
+    <div class="row-body">
+      <h3 style="color:rgba(255,255,255,.35)">The Flow Field</h3>
+      <p>A 3D Perlin noise field generates the invisible atmosphere. Layered octaves of fractal noise produce organic, turbulent motion. Every particle type shares this field — rain bends flight trails, wind reshapes everything.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="dot dot-flight"></div>
+    <div class="row-body">
+      <h3 style="color:rgba(45,212,191,.6)">Flight Data</h3>
+      <p>Each tracked aircraft becomes a particle emitter. Streams of light trace air corridors across the canvas.</p>
+      <span class="tag c-flight">altitude → color</span>
+      <span class="tag c-flight">velocity → particle size</span>
+      <span class="tag c-flight">heading → stream direction</span>
+      <p style="margin-top:14px">Deep blue at low altitude, through teal, amber, white at cruising height. Attempts live data from OpenSky Network — falls back to simulated corridors that mimic real traffic patterns when CORS blocks the request.</p>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="row">
+    <div class="dot dot-wx"></div>
+    <div class="row-body">
+      <h3 style="color:rgba(100,140,255,.6)">Weather as Medium</h3>
+      <p>Weather shapes the physics of the entire system. Live data from Open-Meteo for Santa Clara feeds directly into the flow field:</p>
+      <span class="tag c-wx">wind → flow direction + force</span>
+      <span class="tag c-wx">pressure → field tightness</span>
+      <span class="tag c-wx">humidity → trail persistence</span>
+      <span class="tag c-wx">temperature → color spectrum shift</span>
+      <span class="tag c-wx">clouds → trail fade + fog</span>
+      <span class="tag c-wx">precipitation → rain particles + turbulence</span>
+      <p style="margin-top:14px">High pressure compresses streams into tight ribbons. Low pressure lets them expand and tangle. Rain falls through the same field as flights — where they cross, additive blending makes them bloom. Wind wisps trace faint lines showing the air current. A stormy day and a clear day produce completely different pieces.</p>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="row">
+    <div class="dot dot-sound"></div>
+    <div class="row-body">
+      <h3 style="color:rgba(200,160,255,.6)">Sonification</h3>
+      <p>The same data that drives the visuals generates the audio. Built on Tone.js:</p>
+      <span class="tag c-sound">altitude → FM drone pitch</span>
+      <span class="tag c-sound">wind → filtered brown noise</span>
+      <span class="tag c-sound">humidity → reverb depth</span>
+      <span class="tag c-sound">clouds → feedback delay</span>
+      <span class="tag c-sound">temperature → pad harmonic</span>
+      <span class="tag c-sound">particle density → harmonic pings</span>
+      <p style="margin-top:14px">A low FM drone shifts with average flight altitude. Wind becomes shaped noise. Humidity thickens the reverb. Crystalline pings emerge from the particle field. Cold days sound darker. Warm days resolve upward.</p>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="row">
+    <div class="dot dot-interact"></div>
+    <div class="row-body">
+      <h3 style="color:rgba(255,180,100,.6)">Interaction</h3>
+      <p>The cursor acts as a gravitational lens — it bends the flow field perpendicular to itself, pulling all particle types into a swirling vortex. Parallax shift reveals depth as different altitude layers respond at different rates.</p>
+    </div>
+  </div>
+
+  <div class="footer">built with canvas 2d · perlin noise · tone.js · open-meteo api</div>
+</div>
+
+<!-- ===== ENGINE ===== -->
+<script>
+/* ===== PERLIN NOISE ===== */
+var PM=new Uint8Array(512);
+(function(){var p=[];for(var i=0;i<256;i++)p[i]=i;
+for(var i=255;i>0;i--){var j=(i*16807+1)%256;var t=p[i];p[i]=p[j];p[j]=t}
+for(var i=0;i<512;i++)PM[i]=p[i&255]})();
+function fade(t){return t*t*t*(t*(t*6-15)+10)}
+function grad(h,x,y,z){var b=h&15,u=b<8?x:y,v=b<4?y:b===12||b===14?x:z;return((b&1)?-u:u)+((b&2)?-v:v)}
+function noise3(x,y,z){
+  var X=Math.floor(x)&255,Y=Math.floor(y)&255,Z=Math.floor(z)&255;
+  x-=Math.floor(x);y-=Math.floor(y);z-=Math.floor(z);
+  var u=fade(x),v=fade(y),w=fade(z),
+    A=PM[X]+Y,AA=PM[A]+Z,AB=PM[A+1]+Z,B=PM[X+1]+Y,BA=PM[B]+Z,BB=PM[B+1]+Z;
+  function lr(a,b,t){return a+(b-a)*t}
+  return lr(lr(lr(grad(PM[AA],x,y,z),grad(PM[BA],x-1,y,z),u),
+    lr(grad(PM[AB],x,y-1,z),grad(PM[BB],x-1,y-1,z),u),v),
+    lr(lr(grad(PM[AA+1],x,y,z-1),grad(PM[BA+1],x-1,y,z-1),u),
+    lr(grad(PM[AB+1],x,y-1,z-1),grad(PM[BB+1],x-1,y-1,z-1),u),v),w)
+}
+function fbm(x,y,z,o){var v=0,a=.5,f=1;for(var i=0;i<(o||4);i++){v+=a*noise3(x*f,y*f,z*f);f*=2;a*=.5}return v}
+
+/* ===== COLOR ===== */
+function altRGB(a,ts){
+  a=Math.max(0,Math.min(1,a));var r,g,b;
+  if(a<.25){var t=a/.25;r=15+t*25;g=30+t*150;b=120+t*70}
+  else if(a<.5){var t=(a-.25)/.25;r=40+t*180;g=180+t*30;b=190-t*80}
+  else if(a<.8){var t=(a-.5)/.3;r=220+t*35;g=210-t*80;b=110-t*80}
+  else{var t=(a-.8)/.2;r=255;g=130+t*125;b=30+t*225}
+  r=Math.max(0,Math.min(255,r+(ts||0)*30));b=Math.max(0,Math.min(255,b-(ts||0)*30));
+  return[r|0,g|0,b|0]
+}
+
+/* ===== SETUP ===== */
+var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+var W=window.innerWidth||800, H=window.innerHeight||600;
+cv.width=W;cv.height=H;
+window.addEventListener('resize',function(){
+  W=window.innerWidth||800;H=window.innerHeight||600;
+  cv.width=W;cv.height=H;
+});
+
+var MAX_P=4500;
+var ps=[], fl=[], time=0, frame=0, isLive=false;
+var avgAlt=.5, avgSpd=.5, hBias=0;
+var wx={wind:5,windDir:270,temp:20,hum:50,press:1013,clouds:30,precip:0};
+var mx=W/2, my=H/2, mon=false;
+
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;mon=true});
+document.addEventListener('mouseleave',function(){mon=false});
+document.addEventListener('touchmove',function(e){mx=e.touches[0].clientX;my=e.touches[0].clientY;mon=true},{passive:true});
+
+/* ===== FLIGHTS ===== */
+function genSim(){
+  fl=[];
+  var c=[{x1:.05,y1:.25,x2:.95,y2:.45},{x1:.85,y1:.1,x2:.15,y2:.8},
+    {x1:.25,y1:.05,x2:.75,y2:.95},{x1:.02,y1:.5,x2:.98,y2:.5},
+    {x1:.5,y1:.02,x2:.5,y2:.98},{x1:.1,y1:.75,x2:.9,y2:.25},
+    {x1:.92,y1:.85,x2:.08,y2:.15},{x1:.35,y1:.05,x2:.65,y2:.9}];
+  for(var i=0;i<200;i++){
+    var cr=c[i%c.length],p=Math.random();
+    var x=(cr.x1+(cr.x2-cr.x1)*p+(Math.random()-.5)*.06)*W;
+    var y=(cr.y1+(cr.y2-cr.y1)*p+(Math.random()-.5)*.06)*H;
+    var hd=Math.atan2(cr.x2-cr.x1,-(cr.y2-cr.y1)),sp=150+Math.random()*350;
+    fl.push({x:x,y:y,alt:2000+Math.random()*11000,speed:sp,heading:hd,
+      vx:sp*Math.sin(hd)*.012,vy:-sp*Math.cos(hd)*.012});
+  }
+}
+
+function fetchFlights(){
+  fetch('https://opensky-network.org/api/states/all?lamin=20&lomin=-135&lamax=55&lomax=-60')
+  .then(function(r){if(!r.ok)throw 0;return r.json()})
+  .then(function(d){
+    if(d.states&&d.states.length>10){
+      fl=d.states.slice(0,250).map(function(v){
+        var x=((v[5]+130)/70)*W,y=(1-(v[6]-25)/25)*H,hd=(v[10]||0)*Math.PI/180,sp=v[9]||200;
+        return{x:x,y:y,alt:v[7]||3e3,speed:sp,heading:hd,vx:sp*Math.sin(hd)*.012,vy:-sp*Math.cos(hd)*.012}
+      }).filter(function(f){return f.x>-80&&f.x<W+80&&f.y>-80&&f.y<H+80});
+      isLive=true;
+    }else throw 0;
+    calcStats();
+  }).catch(function(){if(!fl.length)genSim();isLive=false;calcStats()});
+}
+
+function fetchWx(){
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=37.37&longitude=-121.95&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,surface_pressure,cloud_cover,precipitation')
+  .then(function(r){return r.json()})
+  .then(function(d){
+    var c=d.current;
+    wx={wind:c.wind_speed_10m||5,windDir:c.wind_direction_10m||270,temp:c.temperature_2m||20,
+      hum:c.relative_humidity_2m||50,press:c.surface_pressure||1013,clouds:c.cloud_cover||30,precip:c.precipitation||0};
+  }).catch(function(){});
+}
+
+function calcStats(){
+  if(!fl.length)return;
+  var sa=0,ss=0,sh=0,ch=0;
+  for(var i=0;i<fl.length;i++){sa+=fl[i].alt;ss+=fl[i].speed;sh+=Math.sin(fl[i].heading);ch+=Math.cos(fl[i].heading)}
+  avgAlt=Math.min(1,Math.max(0,(sa/fl.length-1e3)/12e3));
+  avgSpd=Math.min(1,Math.max(0,(ss/fl.length-100)/400));
+  hBias=Math.atan2(sh/fl.length,ch/fl.length);
+}
+
+/* ===== SHARED FLOW FIELD ===== */
+function flow(x,y,t,isWeather){
+  var wStr=Math.min(3,wx.wind/15),wRad=(wx.windDir+180)*Math.PI/180;
+  var pN=(wx.press-990)/40,sc=.0025-pN*.0008;
+  var n1=fbm(x*sc,y*sc,t*.12,3),n2=fbm(x*sc*1.3+50,y*sc*1.3+50,t*.08,2);
+  var ang=n1*Math.PI*2+n2*Math.PI*.6+hBias*.25;
+  var wMix=isWeather?.4:.18;
+  ang=ang*(1-wStr*wMix)+wRad*wStr*wMix;
+  if(wx.precip>0) ang+=fbm(x*.012,y*.012,t*.5,2)*Math.min(1,wx.precip/5)*.35;
+  var mag=.6+Math.abs(n2)*1.2+wStr*.4;
+  var gy=isWeather?1.2+wx.precip*.4:0;
+  if(mon){
+    var dx=x-mx,dy=y-my,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<200){var f=(1-d/200)*.7;ang+=(Math.atan2(dy,dx)+Math.PI*.5-ang)*f;mag+=f*2.5}
+  }
+  ang+=fbm(x*.008,y*.008,t*.3,2)*(1-wx.hum/100)*.45;
+  return[Math.cos(ang)*mag,Math.sin(ang)*mag+gy]
+}
+
+/* ===== EMIT ===== */
+function emit(){
+  if(fl.length){
+    var rate=Math.max(3,Math.floor(fl.length/7));
+    for(var i=0;i<rate&&ps.length<MAX_P;i++){
+      var f=fl[Math.floor(Math.random()*fl.length)];
+      var an=Math.max(0,Math.min(1,(f.alt-1e3)/12e3));
+      ps.push({x:f.x+(Math.random()-.5)*8,y:f.y+(Math.random()-.5)*8,
+        vx:f.vx*.2+(Math.random()-.5)*.4,vy:f.vy*.2+(Math.random()-.5)*.4,
+        life:1,decay:.002+Math.random()*.005,alt:an,
+        sz:1.5+Math.max(0,(f.speed-100)/400)*3+Math.random()*1.2,k:0,dp:an})
+    }
+  }
+  if(wx.precip>0){
+    var rate=Math.min(8,Math.floor(wx.precip*4));
+    for(var i=0;i<rate&&ps.length<MAX_P;i++){
+      ps.push({x:Math.random()*W,y:-5-Math.random()*30,vx:(Math.random()-.5)*.5,vy:1+Math.random()*2,
+        life:1,decay:.003+Math.random()*.004,alt:-1,sz:1+Math.random(),k:1,dp:.5+Math.random()*.5})
+    }
+  }
+  if(wx.wind>3&&ps.length<MAX_P-15){
+    var n=Math.min(2,Math.floor(wx.wind/10)),wR=wx.windDir*Math.PI/180;
+    for(var i=0;i<n;i++){
+      var sx,sy;
+      if(Math.abs(Math.sin(wR))>Math.abs(Math.cos(wR))){sx=Math.sin(wR)>0?-10:W+10;sy=Math.random()*H}
+      else{sy=Math.cos(wR)<0?-10:H+10;sx=Math.random()*W}
+      ps.push({x:sx,y:sy,vx:0,vy:0,life:1,decay:.003+Math.random()*.003,alt:-2,sz:.8+Math.random()*.5,k:2,dp:.3+Math.random()*.4})
+    }
+  }
+}
+
+/* ===== UPDATE ===== */
+function update(){
+  var hp=.5+wx.hum/200;
+  for(var i=ps.length-1;i>=0;i--){
+    var p=ps[i],f=flow(p.x,p.y,time,p.k>0);
+    p.vx+=f[0]*.06;p.vy+=f[1]*.06;p.vx*=.96;p.vy*=.96;
+    p.x+=p.vx;p.y+=p.vy;
+    p.life-=p.decay*(p.k===0?(2-hp):1);
+    if(p.life<=0||p.x<-80||p.x>W+80||p.y<-80||p.y>H+80){ps[i]=ps[ps.length-1];ps.pop()}
+  }
+}
+
+function drift(){
+  if(isLive)return;
+  for(var i=0;i<fl.length;i++){
+    fl[i].x+=fl[i].vx*.07;fl[i].y+=fl[i].vy*.07;
+    if(fl[i].x<-50)fl[i].x=W+50;if(fl[i].x>W+50)fl[i].x=-50;
+    if(fl[i].y<-50)fl[i].y=H+50;if(fl[i].y>H+50)fl[i].y=-50;
+  }
+}
+
+/* ===== RENDER ===== */
+function render(){
+  ctx.fillStyle='rgba(6,6,14,0.055)';
+  ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  var ts=(wx.temp-20)/20;
+  var pmx=mon?(mx-W/2)/W:0,pmy=mon?(my-H/2)/H:0;
+  for(var i=0;i<ps.length;i++){
+    var p=ps[i],la=p.life*p.life;
+    var par=1-p.dp*.3;
+    var px=p.x+pmx*25*par,py=p.y+pmy*18*par;
+    if(p.k===0){
+      var c=altRGB(p.alt,ts);
+      var sz=Math.max(.5,p.sz*(.5+p.life*.5));
+      var al=la*.7;
+      ctx.beginPath();ctx.arc(px,py,sz,0,6.283);
+      ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+al.toFixed(2)+')';ctx.fill();
+      if(p.alt>.25&&p.life>.2){
+        ctx.beginPath();ctx.arc(px,py,sz*3.2,0,6.283);
+        ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+(al*.1).toFixed(3)+')';ctx.fill();
+      }
+    }else if(p.k===1){
+      var al=la*.55;
+      ctx.beginPath();ctx.moveTo(px-p.vx*2,py-p.vy*2);ctx.lineTo(px+p.vx*2,py+p.vy*2);
+      ctx.strokeStyle='rgba(70,130,220,'+al.toFixed(2)+')';ctx.lineWidth=1+p.sz*.4;ctx.stroke();
+      ctx.beginPath();ctx.arc(px,py,2.5,0,6.283);
+      ctx.fillStyle='rgba(90,150,240,'+(al*.18).toFixed(3)+')';ctx.fill();
+    }else{
+      var al=la*.22;
+      ctx.beginPath();ctx.moveTo(px-p.vx*4,py-p.vy*4);ctx.lineTo(px+p.vx*4,py+p.vy*4);
+      ctx.strokeStyle='rgba(180,200,220,'+al.toFixed(3)+')';ctx.lineWidth=.7;ctx.stroke();
+    }
+  }
+  ctx.globalCompositeOperation='source-over';
+}
+
+/* ===== AUDIO ===== */
+var audio=null, toneLoaded=false;
+function startAudio(){
+  if(audio)return;
+  if(!toneLoaded){
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js';
+    s.onload=function(){toneLoaded=true;initAudio()};
+    document.head.appendChild(s);
+  }else initAudio();
+}
+function initAudio(){
+  Tone.start().then(function(){
+    var m=new Tone.Gain(.15).toDestination();
+    var rev=new Tone.Reverb({decay:5,wet:.3}).connect(m);
+    var del=new Tone.FeedbackDelay({delayTime:.3,feedback:.3,wet:.18}).connect(rev);
+    var dG=new Tone.Gain(.1).connect(rev);
+    var dr=new Tone.FMSynth({harmonicity:1.5,modulationIndex:.8,oscillator:{type:'sine'},
+      modulation:{type:'triangle'},envelope:{attack:3,decay:0,sustain:1,release:4},
+      modulationEnvelope:{attack:2,decay:0,sustain:1,release:3}}).connect(dG);
+    dr.triggerAttack('C2');
+    var wG=new Tone.Gain(0).connect(rev);
+    var wF=new Tone.Filter({frequency:200,type:'bandpass',Q:1.5}).connect(wG);
+    new Tone.Noise('brown').connect(wF).start();
+    var ping=new Tone.Synth({oscillator:{type:'sine'},envelope:{attack:.005,decay:1.2,sustain:0,release:.8},volume:-20}).connect(del);
+    var pad=new Tone.AMSynth({harmonicity:2,oscillator:{type:'triangle'},envelope:{attack:4,decay:1,sustain:.6,release:5},
+      modulation:{type:'square'},modulationEnvelope:{attack:3,decay:0,sustain:1,release:4},volume:-24}).connect(rev);
+    pad.triggerAttack('E2');
+    audio={m:m,rev:rev,del:del,dr:dr,dG:dG,wG:wG,wF:wF,ping:ping,pad:pad,
+      notes:['C3','E3','G3','B3','D4','E4','G4','A4','C5'],lp:0};
+    document.getElementById('hi').innerHTML='<span class="ht">move to bend field</span>';
+  });
+}
+function updAudio(){
+  if(!audio)return;
+  try{
+    audio.dr.frequency.rampTo(Tone.Frequency('C1').toFrequency()*(1+avgAlt*2),3);
+    audio.wG.gain.rampTo(Math.min(.2,wx.wind/40),1);
+    audio.wF.frequency.rampTo(80+wx.wind*15,1);
+    audio.rev.wet.rampTo(.15+(wx.hum/100)*.6,3);
+    audio.del.wet.rampTo(.1+(wx.clouds/100)*.35,2);
+    var now=Tone.now();
+    if(now-audio.lp>1.5+Math.random()*3){audio.lp=now;
+      audio.ping.triggerAttackRelease(audio.notes[Math.floor(Math.random()*audio.notes.length)],.2)}
+    audio.pad.frequency.rampTo(Tone.Frequency(wx.temp<10?'A1':wx.temp<25?'E2':'G2').toFrequency(),5);
+  }catch(e){}
+}
+
+/* ===== UI ===== */
+var dirs=['N','NE','E','SE','S','SW','W','NW','N'];
+function updUI(){
+  var bg=document.getElementById('badge');
+  bg.textContent=isLive?'live data':'simulated';
+  bg.className='b '+(isLive?'bl':'bs');
+  document.getElementById('fst').innerHTML=
+    'aircraft: <span class="v">'+fl.length+'</span><br>'+
+    'altitude: <span class="v">'+(1+avgAlt*12).toFixed(1)+' km</span><br>'+
+    'velocity: <span class="v">'+(100+avgSpd*400).toFixed(0)+' kts</span><br>'+
+    'particles: <span class="v">'+ps.length+'</span>';
+  var wd=dirs[Math.round(wx.windDir/45)%8]||'--';
+  document.getElementById('wst').innerHTML=
+    'wind: <span class="w">'+wx.wind.toFixed(0)+' km/h '+wd+'</span> → flow<br>'+
+    'temp: <span class="w">'+wx.temp.toFixed(1)+'°C</span> → color<br>'+
+    'humidity: <span class="w">'+wx.hum+'%</span> → trails<br>'+
+    'pressure: <span class="w">'+wx.press.toFixed(0)+' hPa</span> → density<br>'+
+    'clouds: <span class="w">'+wx.clouds+'%</span> → fog'+
+    (wx.precip>0?'<br>precip: <span class="w">'+wx.precip+' mm</span> → rain':'');
+}
+
+/* ===== LOOP ===== */
+var lastF=0,lastW=0;
+function loop(){
+  time+=.016;frame++;
+  var now=Date.now();
+  if(now-lastF>15000){lastF=now;fetchFlights()}
+  if(now-lastW>60000){lastW=now;fetchWx()}
+  if(frame%3===0)drift();
+  emit();update();render();
+  if(frame%20===0)updAudio();
+  if(frame%30===0)updUI();
+  requestAnimationFrame(loop);
+}
+
+ctx.fillStyle='#06060e';ctx.fillRect(0,0,W,H);
+fetchFlights();fetchWx();lastF=lastW=Date.now();
+requestAnimationFrame(loop);
+
+/* hide scroll cue on scroll */
+window.addEventListener('scroll',function(){
+  var cue=document.getElementById('scroll-cue');
+  if(cue)cue.style.opacity=Math.max(0,1-window.scrollY/200);
+},{passive:true});
+</script>
+</body>
+</html>
