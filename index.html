@@ -219,12 +219,12 @@ cv.width=W;cv.height=H;
 window.addEventListener('resize',function(){
   W=window.innerWidth||800;H=window.innerHeight||600;
   cv.width=W;cv.height=H;
-  pScale=Math.max(1,refW/W);
+  pScale=Math.min(1.6,Math.max(1,refW/W));
 });
 
-var MAX_P=4500;
+var MAX_P=W<600?2000:4500;
 var refW=1200;
-var pScale=Math.max(1,refW/W);
+var pScale=Math.min(1.6,Math.max(1,refW/W));
 var ps=[], fl=[], time=0, frame=0, isLive=false;
 var avgAlt=.5, avgSpd=.5, hBias=0;
 var wx={wind:5,windDir:270,temp:20,hum:50,press:1013,clouds:30,precip:0};
